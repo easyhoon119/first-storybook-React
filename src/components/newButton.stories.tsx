@@ -21,3 +21,9 @@ Large.args = {
     size: "large",
     label: "large",
 };
+
+export const Middle = Template.bind({});
+Middle.args = {
+    size: "middle",
+    label: "middle",
+};
