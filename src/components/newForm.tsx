@@ -1,13 +1,45 @@
 import styled from "styled-components";
-import { useForm } from "react-hook-form";
+import {
+    Controller,
+    useForm,
+    UseFormRegister,
+    ValidationRule,
+} from "react-hook-form";
+import { ErrorResponse } from "@remix-run/router";
+import { Input } from "antd";
+
+type checkBoxType = [{ personal: boolean }, { marketing: boolean }];
 
 type formDataType = {
     email: string;
     password: string;
+    language: string;
+    antdInput: string;
+    checkBox: checkBoxType;
 };
+
+interface CustomInputProps {
+    label: "email" | "password" | "language" | "antdInput" | "checkBox";
+    register: UseFormRegister<formDataType>;
+    required: string | ValidationRule<boolean> | undefined;
+}
+
+function CustomInput({ label, register, required }: CustomInputProps) {
+    return (
+        <>
+            <input
+                className="input-field"
+                placeholder="language"
+                defaultValue=""
+                {...register(label, { required })}
+            />
+        </>
+    );
+}
 
 function NewForm() {
     const {
+        control,
         register,
         handleSubmit,
         watch,
@@ -59,6 +91,57 @@ function NewForm() {
                 {errors.password && (
                     <p className="error-text">{errors.password.message}</p>
                 )}
+                <CustomInput
+                    label="language"
+                    register={register}
+                    required={{ value: true, message: "언어는 필수 값입니다." }}
+                />
+                {errors.language && (
+                    <p className="error-text">{errors.language.message}</p>
+                )}
+                <Controller
+                    name="antdInput"
+                    defaultValue=""
+                    rules={{
+                        required: {
+                            value: true,
+                            message: "antd는 필수값입니다.",
+                        },
+                    }}
+                    control={control}
+                    render={({ field }: any) => (
+                        <div className="input-field">
+                            <Input.Search placeholder="antdInput" {...field} />
+                        </div>
+                    )}
+                />
+                {errors.antdInput && (
+                    <p className="error-text">{errors.antdInput.message}</p>
+                )}
+                <div className="input-field">
+                    <label>개인정보 수집 동의</label>
+                    <input
+                        type="checkbox"
+                        {...register("checkBox.0.personal", {
+                            required: {
+                                value: true,
+                                message: "개인정보 동의는 필수입니다.",
+                            },
+                        })}
+                    />
+                </div>
+                <div className="input-field">
+                    <label>광고 및 마케팅 동의</label>
+                    <input
+                        type="checkbox"
+                        {...register("checkBox.1.marketing", {
+                            required: {
+                                value: true,
+                                message: "마켓팅 동의는 필수입니다.",
+                            },
+                        })}
+                    />
+                </div>
                 <input type="submit" className="submit-button" />
             </form>
         </NewFormStyle>
